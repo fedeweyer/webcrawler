@@ -1,0 +1,11 @@
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\webcrawler.exe.config
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\webcrawler.exe
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\webcrawler.pdb
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\obj\Debug\webcrawler.csprojAssemblyReference.cache
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\obj\Debug\webcrawler.csproj.CoreCompileInputs.cache
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\obj\Debug\webcrawler.exe
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\obj\Debug\webcrawler.pdb
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\bin\Debug\HtmlAgilityPack.xml
+C:\Users\Federico\Source\Repos\fr4nkfurt\test\webcrawler\webcrawler\obj\Debug\webcrawler.csproj.CopyComplete
