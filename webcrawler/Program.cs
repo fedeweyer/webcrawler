@@ -28,8 +28,6 @@ namespace webcrawler
             foreach (HtmlAgilityPack.HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
             {
                 urlsToProcess.Add(link.GetAttributeValue("href", string.Empty));
-                Console.WriteLine("url found " + link.GetAttributeValue("href", string.Empty));
-
                 if (urlsToProcess.Count == 10) break;
             }
 
@@ -57,8 +55,8 @@ namespace webcrawler
 
         static void processUrl(string url)
         {
-            //Thread will store its results locally, and once completed will add the results to the global results static variable (wordCountResults)
-            //Reason: significantly reduce the number of locks
+            //Each Thread will store its results locally (threadResults), and once completed will add the results to the global results static variable (wordCountResults)
+            //Reason: significant reduce of the number of locks
             Hashtable threadResults = new Hashtable();
             HtmlAgilityPack.HtmlWeb hw = new HtmlAgilityPack.HtmlWeb();
             if (!url.Contains("http"))
@@ -67,17 +65,21 @@ namespace webcrawler
             }
             HtmlAgilityPack.HtmlDocument doc = hw.Load(url);
             string pageContent = System.Net.WebUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode("//body").InnerText);
-            string[] wordList = pageContent.Split();
+            string[] wordList = pageContent.Split(new Char[] { ' ', ',', '.', '·', '(', ')', '[', ']', '{', '}', '?', '¿', '!', '¡', '"', '\'', '/', '-', ':', ';', '=', '+', '\n', '\t' });
             //Now we add each word to the local results table
             foreach (string word in wordList)
             {
-                if (threadResults.Contains(word))
-                {
-                    threadResults[word] = Convert.ToInt32(threadResults[word]) + 1;
-                }
-                else
-                {
-                    threadResults.Add(word, 1);
+                if (word.All(Char.IsLetter)) //Only considering strings that formed by letters, ie years and signs are filtered out
+                { 
+                    //if word is new, it is inserted with record count = 1, else count is increased by 1
+                    if (threadResults.Contains(word))
+                    {
+                        threadResults[word] = Convert.ToInt32(threadResults[word]) + 1;
+                    }
+                    else
+                    {
+                        threadResults.Add(word, 1);
+                    }
                 }
             }
             //After thread has completed its processing, will merge the results with the global ones
@@ -98,5 +100,3 @@ namespace webcrawler
         }
     }
 }
-        
-
