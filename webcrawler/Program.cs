@@ -13,39 +13,45 @@ namespace webcrawler
 {
     class Program
     {
-        static Hashtable wordCountResults = new Hashtable();    //Global Results will be stored here, contains the results of all visited pages
-        static readonly object locker = new object();           //Lock object used to provide thread safe read/write over wordCountResults
-
+        // Global Results will be stored here, contains the results of all visited pages.
+        static Hashtable wordCountResults = new Hashtable();            
+        // Lock object used to provide thread safe read/write over wordCountResults.
+        static readonly object locker = new object();           
+        
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8; //Setting the console encoding as we will be printing UTF8
-            //First, we get wikipedia landing page to get the 10 links
+            // Setting the console encoding as we will be printing UTF8.
+            Console.OutputEncoding = System.Text.Encoding.UTF8; 
+            // First, we get wikipedia landing page to get the 10 links.
             HtmlAgilityPack.HtmlWeb hw = new HtmlAgilityPack.HtmlWeb();
             HtmlAgilityPack.HtmlDocument doc = hw.Load("http://wikipedia.org");
-
-            List<string> urlsToProcess = new List<string>(); //Will contain all the urls to be processed
+            // Will contain all the urls to be processed.
+            List<string> urlsToProcess = new List<string>(); 
 
             foreach (HtmlAgilityPack.HtmlNode link in doc.DocumentNode.SelectNodes("//a[@href]"))
             {
                 urlsToProcess.Add(link.GetAttributeValue("href", string.Empty));
+                // We are counting only the first 10 links.
                 if (urlsToProcess.Count == 10) break;
             }
 
-            //Need to store the threads in a list in order to call each thread Join() method after they are started
+            // Threads are stored in a list in order to call each thread Join() method after they are started.
             var threads = new List<Thread>(); 
-            //Each of the 10 threads is started
+            // Each threads is started
             foreach (var url in urlsToProcess)
             {
-                Thread t = new Thread(() => processUrl(url)); //Creating the thread and sending the url as a parameter
+                // Creating the thread and sending the url as a parameter.
+                Thread t = new Thread(() => processUrl(url)); 
                 t.Start();
                 threads.Add(t);
             }
-            //By joining all the threads into the "main" thread, execution of "main" thread waits for all the child threads to end before resuming
+            // By joining all the threads into the "main" thread, execution of "main" thread waits 
+            // for all the child threads to end before resuming.
             foreach (Thread t in threads)
             {
                 t.Join(); 
             }
-            //Outputting the final values to the console
+            // Outputting the final values to the console.
             Console.WriteLine("Word : Repeated Times");
             foreach (DictionaryEntry entry in wordCountResults)
             {
@@ -55,8 +61,9 @@ namespace webcrawler
 
         static void processUrl(string url)
         {
-            //Each Thread will store its results locally (threadResults), and once completed will add the results to the global results static variable (wordCountResults)
-            //Reason: significant reduce of the number of locks
+            // Each Thread will store its results locally (threadResults), and once completed will add 
+            // the results to the global results static variable (wordCountResults).
+            // Reason: significant reduce of the number of thread locks.
             Hashtable threadResults = new Hashtable();
             HtmlAgilityPack.HtmlWeb hw = new HtmlAgilityPack.HtmlWeb();
             if (!url.Contains("http"))
@@ -65,13 +72,14 @@ namespace webcrawler
             }
             HtmlAgilityPack.HtmlDocument doc = hw.Load(url);
             string pageContent = System.Net.WebUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode("//body").InnerText);
-            string[] wordList = pageContent.Split(new Char[] { ' ', ',', '.', '·', '(', ')', '[', ']', '{', '}', '?', '¿', '!', '¡', '"', '\'', '/', '-', ':', ';', '=', '+', '\n', '\t' });
-            //Now we add each word to the local results table
+            string[] wordList = pageContent.Split(new Char[] { ' ', ',', '.', '·', '(', ')', '[', ']', '{', '}',
+                '?', '¿', '!', '¡', '"', '\'', '/', '-', ':', ';', '=', '+', '\n', '\t' });
+            // Now we add each word to the thread local results table.
             foreach (string word in wordList)
             {
                 if (word.All(Char.IsLetter)) //Only considering strings that formed by letters, ie years and signs are filtered out
                 { 
-                    //if word is new, it is inserted with record count = 1, else count is increased by 1
+                    // If the word is new, it is inserted with record count = 1, else count is increased by 1.
                     if (threadResults.Contains(word))
                     {
                         threadResults[word] = Convert.ToInt32(threadResults[word]) + 1;
@@ -82,7 +90,7 @@ namespace webcrawler
                     }
                 }
             }
-            //After thread has completed its processing, will merge the results with the global ones
+            // Only after thread has completed its processing, will merge the results with the global ones.
             lock (locker)
             {
                 foreach (DictionaryEntry wordEntry in threadResults)
