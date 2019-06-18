@@ -68,7 +68,8 @@ namespace webcrawler
             HtmlAgilityPack.HtmlWeb hw = new HtmlAgilityPack.HtmlWeb();
             if (!url.Contains("http"))
             {
-                url = "http:" + url; //Adding 'http:' prefix as required by HtmlAgilityPack
+                // Adding 'http:' prefix as required by HtmlAgilityPack.
+                url = "http:" + url; 
             }
             HtmlAgilityPack.HtmlDocument doc = hw.Load(url);
             string pageContent = System.Net.WebUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode("//body").InnerText);
@@ -77,7 +78,8 @@ namespace webcrawler
             // Now we add each word to the thread local results table.
             foreach (string word in wordList)
             {
-                if (word.All(Char.IsLetter)) //Only considering strings that formed by letters, ie years and signs are filtered out
+                // Only considering strings that formed by letters, ie years and signs are filtered out.
+                if (word.All(Char.IsLetter)) 
                 { 
                     // If the word is new, it is inserted with record count = 1, else count is increased by 1.
                     if (threadResults.Contains(word))
@@ -90,7 +92,7 @@ namespace webcrawler
                     }
                 }
             }
-            // Only after thread has completed its processing, will merge the results with the global ones.
+            // Only after thread has completed its processing, it will merge its results with the global ones.
             lock (locker)
             {
                 foreach (DictionaryEntry wordEntry in threadResults)
